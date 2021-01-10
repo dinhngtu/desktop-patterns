@@ -32,8 +32,6 @@ const patterns = {
   "Tulip": "0 0 84 124 124 56 146 124",
   "Waffle": "0 0 0 0 128 128 128 240",
   "Weave": "136 84 34 69 136 21 34 81",
-
-  "Squares": "85 0 128 0 128 0 128 0",
 };
 
 function loadPatterns() {
@@ -116,7 +114,7 @@ function save() {
   const bytes = words.map(x => parseInt(x));
 
   const options = {
-    pattern: bytes,
+    pattern: sel.value ? bytes : JSON.parse(config.value).pattern,
     color: fg.value,
     backColor: bg.value,
     bpc: parseInt(bpc.value),
