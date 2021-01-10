@@ -52,7 +52,6 @@ function createPattern(options) {
   pc.height = options.pattern.length * options.zoom;
 
   const pctx = pc.getContext("2d");
-  pctx.scale(1, 1);
   pctx.fillStyle = options.backColor;
   pctx.fillRect(0, 0, 1, 1);
   const bg = pctx.getImageData(0, 0, 1, 1).data;
@@ -97,7 +96,6 @@ function render(options) {
   const pc = createPattern(options);
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.scale(1, 1);
   const cpat = ctx.createPattern(pc, "repeat");
   ctx.fillStyle = cpat;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -161,6 +159,13 @@ window.addEventListener("DOMContentLoaded", () => {
   });
   document.getElementById("config").addEventListener("focus", () => {
     document.getElementById("config").select();
+  });
+  document.getElementById("canvas").addEventListener("dblclick", () => {
+    document.getElementById("wrapper").requestFullscreen({
+      navigationUI: "hide"
+    }).then(() => {
+      render(load());
+    });
   });
   render(save());
 });
