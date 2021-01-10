@@ -1,3 +1,5 @@
+"use strict";
+
 const patterns = {
   "Bricks": "187 95 174 93 186 117 234 245",
   "Buttons": "170 125 198 71 198 127 190 85",
