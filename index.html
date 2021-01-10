@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div class="main">
+        <div class="controls">
+            <div class="controlgroup">
+                <label for="invert">Pattern:</label>
+                <select class="control" name="pattern" id="pattern"></select>
+            </div>
+            <div class="controlgroup">
+                <label for="invert">Color:</label>
+                <input type="color" class="control" name="picker" id="picker" value="#008080">
+            </div>
+            <div class="controlgroup">
+                <label for="invert">Zoom:</label>
+                <input type="number" class="control" name="zoom" id="zoom" min="1" max="16" value="1">
+            </div>
+            <div class="controlgroup">
+                <input type="checkbox" class="control" name="invert" id="invert">
+                <label for="invert">Invert</label>
+            </div>
+            <div class="controlgroup">
+                <label for="config">Config:</label>
+                <input type="text" name="config" id="config">
+            </div>
+        </div>
+        <div id="wrapper">
+            <canvas id="canvas"></canvas>
+        </div>
+    </div>
+    <script src="index.js" type="text/javascript"></script>
+</body>
+
+</html>
