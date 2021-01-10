@@ -65,8 +65,7 @@ function createPattern(options) {
     for (let x = 0; x < 8; x++) {
       let r, g, b, a = 255;
 
-      const pb = options.invert ? ~options.pattern[y] : options.pattern[y];
-      if (pb & (1 << x)) {
+      if (options.pattern[y] & (1 << x)) {
         r = fg[0];
         g = fg[1];
         b = fg[2];
@@ -110,20 +109,17 @@ function save() {
   const fg = document.getElementById("fg");
   const bg = document.getElementById("bg");
   const zoom = document.getElementById("zoom");
-  const invert = document.getElementById("invert");
   const config = document.getElementById("config");
 
   const words = sel.value.split(' ');
   const bytes = words.map(x => parseInt(x));
-  const options = invert.checked ? "i" : "";
 
-  config.value = btoa(String.fromCharCode(...new Uint8Array(bytes))) + "," + fg.value + "," + bg.value + "," + zoom.value + "," + options;
+  config.value = btoa(String.fromCharCode(...new Uint8Array(bytes))) + "," + fg.value + "," + bg.value + "," + zoom.value;
   return {
     pattern: bytes,
     color: fg.value,
     backColor: bg.value,
     zoom: parseInt(zoom.value),
-    invert: invert.checked,
   };
 }
 
@@ -132,7 +128,6 @@ function load() {
   const fg = document.getElementById("fg");
   const bg = document.getElementById("bg");
   const zoom = document.getElementById("zoom");
-  const invert = document.getElementById("invert");
   const config = document.getElementById("config");
 
   const values = config.value.split(",");
@@ -143,38 +138,50 @@ function load() {
     color: values[1],
     backColor: values[2],
     zoom: parseInt(values[3]),
-    invert: values[4].includes("i"),
   };
   sel.value = bytes.join(" ");
   fg.value = options.color;
   bg.value = options.backColor;
   zoom.value = options.zoom;
-  invert.checked = options.invert;
   return options;
 }
 
 window.addEventListener("DOMContentLoaded", () => {
   loadPatterns();
+
+  const fg = document.getElementById("fg");
+  const bg = document.getElementById("bg");
+  const swap = document.getElementById("swap");
+  const config = document.getElementById("config");
+  const canvas = document.getElementById("canvas");
+  const wrapper = document.getElementById("wrapper");
   window.addEventListener("resize", () => {
     render(load());
   });
   document.querySelectorAll(".control").forEach(x => x.addEventListener("change", () => {
     render(save());
   }));
-  document.getElementById("config").addEventListener("keydown", ev => {
+  swap.addEventListener("click", () => {
+    const tmp = fg.value;
+    fg.value = bg.value;
+    bg.value = tmp;
+    render(save());
+  });
+  config.addEventListener("keydown", ev => {
     if (ev.key == "Enter") {
       render(load());
     }
   });
-  document.getElementById("config").addEventListener("focus", () => {
-    document.getElementById("config").select();
+  config.addEventListener("focus", () => {
+    config.select();
   });
-  document.getElementById("canvas").addEventListener("dblclick", () => {
-    document.getElementById("wrapper").requestFullscreen({
+  canvas.addEventListener("dblclick", () => {
+    wrapper.requestFullscreen({
       navigationUI: "hide"
     }).then(() => {
       render(load());
     });
   });
+
   render(save());
 });
