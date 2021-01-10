@@ -102,24 +102,26 @@ function render(options) {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-function save() {
-  const sel = document.getElementById("pattern");
-  const fg = document.getElementById("fg");
-  const bg = document.getElementById("bg");
-  const bpc = document.getElementById("bpc");
-  const zoom = document.getElementById("zoom");
-  const config = document.getElementById("config");
+function save(options) {
+  if (!options) {
+    const sel = document.getElementById("pattern");
+    const fg = document.getElementById("fg");
+    const bg = document.getElementById("bg");
+    const bpc = document.getElementById("bpc");
+    const zoom = document.getElementById("zoom");
+    const config = document.getElementById("config");
 
-  const words = sel.value.split(' ');
-  const bytes = words.map(x => parseInt(x));
+    const words = sel.value.split(' ');
+    const bytes = words.map(x => parseInt(x));
 
-  const options = {
-    pattern: sel.value ? bytes : JSON.parse(config.value).pattern,
-    color: fg.value,
-    backColor: bg.value,
-    bpc: parseInt(bpc.value),
-    zoom: parseInt(zoom.value),
-  };
+    options = {
+      pattern: sel.value ? bytes : JSON.parse(config.value).pattern,
+      color: fg.value,
+      backColor: bg.value,
+      bpc: parseInt(bpc.value),
+      zoom: parseInt(zoom.value),
+    };
+  }
   config.value = JSON.stringify(options);
   return options;
 }
@@ -141,6 +143,27 @@ function load() {
   return options;
 }
 
+function draw(cx, cy) {
+  const options = load();
+  const x = Math.floor(cx / options.zoom) % options.bpc;
+  const y = Math.floor(cy / options.zoom) % options.pattern.length;
+  options.pattern[y] = options.pattern[y] ^ (1 << x);
+  render(save(options));
+}
+
+function toggleFullscreen() {
+  if (document.fullscreenElement) {
+    document.exitFullscreen();
+  } else {
+    const wrapper = document.getElementById("wrapper");
+    wrapper.requestFullscreen({
+      navigationUI: "hide"
+    }).then(() => {
+      render(load());
+    });
+  }
+}
+
 window.addEventListener("DOMContentLoaded", () => {
   loadPatterns();
 
@@ -149,13 +172,10 @@ window.addEventListener("DOMContentLoaded", () => {
   const swap = document.getElementById("swap");
   const config = document.getElementById("config");
   const canvas = document.getElementById("canvas");
-  const wrapper = document.getElementById("wrapper");
-  window.addEventListener("resize", () => {
-    render(load());
-  });
-  document.querySelectorAll(".control").forEach(x => x.addEventListener("change", () => {
-    render(save());
-  }));
+  const pencil = document.getElementById("pencil");
+  const fullscreen = document.getElementById("fullscreen");
+  window.addEventListener("resize", () => render(load()));
+  document.querySelectorAll(".control").forEach(x => x.addEventListener("change", () => render(save())));
   swap.addEventListener("click", () => {
     const tmp = fg.value;
     fg.value = bg.value;
@@ -167,16 +187,18 @@ window.addEventListener("DOMContentLoaded", () => {
       render(load());
     }
   });
-  config.addEventListener("focus", () => {
-    config.select();
+  config.addEventListener("focus", () => config.select());
+  canvas.addEventListener("click", ev => {
+    if (pencil.checked) {
+      const cp = canvas.getBoundingClientRect()
+      draw(ev.clientX - cp.left, ev.clientY - cp.top);
+    }
   });
+  fullscreen.addEventListener("click", () => toggleFullscreen());
   canvas.addEventListener("dblclick", () => {
-    wrapper.requestFullscreen({
-      navigationUI: "hide"
-    }).then(() => {
-      render(load());
-    });
+    if (!pencil.checked) {
+      toggleFullscreen();
+    }
   });
-
   render(save());
 });
