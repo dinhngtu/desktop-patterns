@@ -43,8 +43,11 @@ body, .main {
 
 #wrapper {
     flex-grow: 1;
-    border: 1px solid black;
     overflow: hidden;
+}
+
+#wrapper:not(:fullscreen) {
+    border: 1px solid black;
 }
 
 .grow {
