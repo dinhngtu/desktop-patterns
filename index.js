@@ -48,7 +48,7 @@ function loadPatterns() {
 
 function createPattern(options) {
   const pc = document.createElement("canvas");
-  pc.width = 8 * options.zoom;
+  pc.width = options.bpc * options.zoom;
   pc.height = options.pattern.length * options.zoom;
 
   const pctx = pc.getContext("2d");
@@ -62,7 +62,7 @@ function createPattern(options) {
 
   const id = pctx.createImageData(pc.width, pc.height);
   for (let y = 0; y < options.pattern.length; y++) {
-    for (let x = 0; x < 8; x++) {
+    for (let x = 0; x < options.bpc; x++) {
       let r, g, b, a = 255;
 
       if (options.pattern[y] & (1 << x)) {
@@ -77,7 +77,7 @@ function createPattern(options) {
 
       for (let zy = 0; zy < options.zoom; zy++) {
         for (let zx = 0; zx < options.zoom; zx++) {
-          const idx = ((y * options.zoom + zy) * 8 * options.zoom + (x * options.zoom + zx)) * 4;
+          const idx = ((y * options.zoom + zy) * options.bpc * options.zoom + (x * options.zoom + zx)) * 4;
           id.data[idx] = r;
           id.data[idx + 1] = g;
           id.data[idx + 2] = b;
@@ -108,40 +108,37 @@ function save() {
   const sel = document.getElementById("pattern");
   const fg = document.getElementById("fg");
   const bg = document.getElementById("bg");
+  const bpc = document.getElementById("bpc");
   const zoom = document.getElementById("zoom");
   const config = document.getElementById("config");
 
   const words = sel.value.split(' ');
   const bytes = words.map(x => parseInt(x));
 
-  config.value = btoa(String.fromCharCode(...new Uint8Array(bytes))) + "," + fg.value + "," + bg.value + "," + zoom.value;
-  return {
+  const options = {
     pattern: bytes,
     color: fg.value,
     backColor: bg.value,
+    bpc: parseInt(bpc.value),
     zoom: parseInt(zoom.value),
   };
+  config.value = JSON.stringify(options);
+  return options;
 }
 
 function load() {
   const sel = document.getElementById("pattern");
   const fg = document.getElementById("fg");
   const bg = document.getElementById("bg");
+  const bpc = document.getElementById("bpc");
   const zoom = document.getElementById("zoom");
   const config = document.getElementById("config");
 
-  const values = config.value.split(",");
-  const bytes = new Uint8Array([...atob(values[0])].map(char => char.charCodeAt(0)));
-
-  const options = {
-    pattern: bytes,
-    color: values[1],
-    backColor: values[2],
-    zoom: parseInt(values[3]),
-  };
-  sel.value = bytes.join(" ");
+  const options = JSON.parse(config.value);
+  sel.value = options.pattern.map(x => x.toString()).join(" ");
   fg.value = options.color;
   bg.value = options.backColor;
+  bpc.value = options.bpc;
   zoom.value = options.zoom;
   return options;
 }
