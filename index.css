@@ -26,12 +26,18 @@ body, .main {
 }
 
 .controls {
-    flex-grow: 0;
     margin-top: 8px;
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
 }
 
 .controlgroup {
-    display: inline;
+    display: flex;
+    align-items: baseline;
+}
+
+.controls > .controlgroup:not(:last-child), .controlgroup > :not(:last-child) {
     margin-right: 8px;
 }
 
@@ -39,4 +45,8 @@ body, .main {
     flex-grow: 1;
     border: 1px solid black;
     overflow: hidden;
+}
+
+.grow {
+    flex-grow: 1;
 }

@@ -14,8 +14,12 @@
                 <select class="control" name="pattern" id="pattern"></select>
             </div>
             <div class="controlgroup">
-                <label for="invert">Color:</label>
-                <input type="color" class="control" name="picker" id="picker" value="#008080">
+                <label for="fg">FG:</label>
+                <input type="color" class="control" name="fg" id="fg" value="#000000">
+            </div>
+            <div class="controlgroup">
+                <label for="bg">BG:</label>
+                <input type="color" class="control" name="bg" id="bg" value="#008080">
             </div>
             <div class="controlgroup">
                 <label for="invert">Zoom:</label>
@@ -25,9 +29,9 @@
                 <input type="checkbox" class="control" name="invert" id="invert">
                 <label for="invert">Invert</label>
             </div>
-            <div class="controlgroup">
+            <div class="controlgroup grow">
                 <label for="config">Config:</label>
-                <input type="text" name="config" id="config">
+                <input class="grow" type="text" name="config" id="config">
             </div>
         </div>
         <div id="wrapper">

@@ -52,6 +52,10 @@ function createPattern(options) {
   pc.height = options.pattern.length * options.zoom;
 
   const pctx = pc.getContext("2d");
+  pctx.fillStyle = options.color;
+  pctx.fillRect(0, 0, 1, 1);
+  const fg = pctx.getImageData(0, 0, 1, 1).data;
+
   pctx.fillStyle = options.backColor;
   pctx.fillRect(0, 0, 1, 1);
   const bg = pctx.getImageData(0, 0, 1, 1).data;
@@ -63,9 +67,9 @@ function createPattern(options) {
 
       const pb = options.invert ? ~options.pattern[y] : options.pattern[y];
       if (pb & (1 << x)) {
-        r = 0;
-        g = 0;
-        b = 0;
+        r = fg[0];
+        g = fg[1];
+        b = fg[2];
       } else {
         r = bg[0];
         g = bg[1];
@@ -103,7 +107,8 @@ function render(options) {
 
 function save() {
   const sel = document.getElementById("pattern");
-  const picker = document.getElementById("picker");
+  const fg = document.getElementById("fg");
+  const bg = document.getElementById("bg");
   const zoom = document.getElementById("zoom");
   const invert = document.getElementById("invert");
   const config = document.getElementById("config");
@@ -112,10 +117,11 @@ function save() {
   const bytes = words.map(x => parseInt(x));
   const options = invert.checked ? "i" : "";
 
-  config.value = btoa(String.fromCharCode(...new Uint8Array(bytes))) + "," + picker.value + "," + zoom.value + "," + options;
+  config.value = btoa(String.fromCharCode(...new Uint8Array(bytes))) + "," + fg.value + "," + bg.value + "," + zoom.value + "," + options;
   return {
     pattern: bytes,
-    backColor: picker.value,
+    color: fg.value,
+    backColor: bg.value,
     zoom: parseInt(zoom.value),
     invert: invert.checked,
   };
@@ -123,7 +129,8 @@ function save() {
 
 function load() {
   const sel = document.getElementById("pattern");
-  const picker = document.getElementById("picker");
+  const fg = document.getElementById("fg");
+  const bg = document.getElementById("bg");
   const zoom = document.getElementById("zoom");
   const invert = document.getElementById("invert");
   const config = document.getElementById("config");
@@ -133,12 +140,14 @@ function load() {
 
   const options = {
     pattern: bytes,
-    backColor: values[1],
-    zoom: parseInt(values[2]),
-    invert: values[3].includes("i"),
+    color: values[1],
+    backColor: values[2],
+    zoom: parseInt(values[3]),
+    invert: values[4].includes("i"),
   };
   sel.value = bytes.join(" ");
-  picker.value = options.backColor;
+  fg.value = options.color;
+  bg.value = options.backColor;
   zoom.value = options.zoom;
   invert.checked = options.invert;
   return options;
