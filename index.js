@@ -76,8 +76,25 @@ const patterns = {
   "Among Us": "0 56 100 150 98 66 86 108",
 };
 
+const fg = document.getElementById("fg");
+const bg = document.getElementById("bg");
+const swap = document.getElementById("swap");
+const config = document.getElementById("config");
+const preview = document.getElementById("preview");
+const canvas = document.getElementById("render");
+const pencil = document.getElementById("pencil");
+const fullscreen = document.getElementById("fullscreen");
+const rotl = document.getElementById("rotl");
+const rotu = document.getElementById("rotu");
+const rotd = document.getElementById("rotd");
+const rotr = document.getElementById("rotr");
+const sel = document.getElementById("pattern");
+const wrapper = document.getElementById("wrapper");
+const zoomwarning = document.getElementById("zoomwarning");
+const bpc = document.getElementById("bpc");
+const zoom = document.getElementById("zoom");
+
 function loadPatterns() {
-  const sel = document.getElementById("pattern");
   for (const [name, value] of Object.entries(patterns)) {
     const el = document.createElement("option");
     el.label = name;
@@ -86,8 +103,7 @@ function loadPatterns() {
   }
 }
 
-function createPattern(options) {
-  const pc = document.getElementById("preview");
+function createPattern(pc, options) {
   pc.width = options.bpc * options.zoom;
   pc.height = options.pattern.length * options.zoom;
 
@@ -131,17 +147,13 @@ function createPattern(options) {
 }
 
 function render(options) {
-  const wrapper = document.getElementById("wrapper");
-  const canvas = document.getElementById("render");
-  const zoomwarning = document.getElementById("zoomwarning");
-
   if (window.devicePixelRatio === undefined || window.devicePixelRatio === 1) {
     zoomwarning.style.display = "none";
   } else {
     zoomwarning.style.display = "block";
   }
 
-  const pc = createPattern(options);
+  const pc = createPattern(preview, options);
   // set canvas size after creating pattern since changing pattern size shifts the wrapper size
   canvas.width = wrapper.clientWidth;
   canvas.height = wrapper.clientHeight;
@@ -154,13 +166,6 @@ function render(options) {
 
 function save(options) {
   if (!options) {
-    const sel = document.getElementById("pattern");
-    const fg = document.getElementById("fg");
-    const bg = document.getElementById("bg");
-    const bpc = document.getElementById("bpc");
-    const zoom = document.getElementById("zoom");
-    const config = document.getElementById("config");
-
     const words = sel.value.split(' ');
     const bytes = words.map(x => parseInt(x));
 
@@ -177,13 +182,6 @@ function save(options) {
 }
 
 function load() {
-  const sel = document.getElementById("pattern");
-  const fg = document.getElementById("fg");
-  const bg = document.getElementById("bg");
-  const bpc = document.getElementById("bpc");
-  const zoom = document.getElementById("zoom");
-  const config = document.getElementById("config");
-
   const options = JSON.parse(config.value);
   sel.value = options.pattern.map(x => x.toString()).join(" ");
   fg.value = options.color;
@@ -203,12 +201,9 @@ function draw(cx, cy) {
 
 function toggleFullscreen() {
   if (document.fullscreenElement) {
-    const canvas = document.getElementById("render");
-    const pencil = document.getElementById("pencil");
     document.exitFullscreen();
     canvas.style.cursor = pencil.checked ? "crosshair" : "";
   } else {
-    const wrapper = document.getElementById("wrapper");
     wrapper.requestFullscreen({
       navigationUI: "hide"
     }).then(() => {
@@ -249,74 +244,59 @@ function rotateRight() {
   render(save(options));
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  loadPatterns();
+loadPatterns();
 
-  const fg = document.getElementById("fg");
-  const bg = document.getElementById("bg");
-  const swap = document.getElementById("swap");
-  const config = document.getElementById("config");
-  const preview = document.getElementById("preview");
-  const canvas = document.getElementById("render");
-  const pencil = document.getElementById("pencil");
-  const fullscreen = document.getElementById("fullscreen");
-  const rotl = document.getElementById("rotl");
-  const rotu = document.getElementById("rotu");
-  const rotd = document.getElementById("rotd");
-  const rotr = document.getElementById("rotr");
-
-  document.onselectstart = () => false;
-  window.addEventListener("resize", () => render(load()));
-  document.querySelectorAll(".control").forEach(x => x.addEventListener("change", () => render(save())));
-  swap.addEventListener("click", () => {
-    const tmp = fg.value;
-    fg.value = bg.value;
-    bg.value = tmp;
-    render(save());
-  });
-  config.addEventListener("keydown", ev => {
-    if (ev.key == "Enter") {
-      render(load());
-    }
-  });
-  config.addEventListener("focus", () => config.select());
-
-  preview.addEventListener("click", ev => {
-    if (pencil.checked) {
-      const cp = preview.getBoundingClientRect()
-      draw(ev.clientX - cp.left, ev.clientY - cp.top);
-    }
-  });
-  canvas.addEventListener("click", ev => {
-    if (pencil.checked) {
-      const cp = canvas.getBoundingClientRect()
-      draw(ev.clientX - cp.left, ev.clientY - cp.top);
-    }
-  });
-  pencil.addEventListener("change", () => {
-    preview.style.cursor = pencil.checked ? "crosshair" : "";
-    canvas.style.cursor = "crosshair";
-  });
-
-  fullscreen.addEventListener("click", () => toggleFullscreen());
-  canvas.addEventListener("dblclick", () => {
-    if (!pencil.checked) {
-      toggleFullscreen();
-    }
-  });
-  let cursorTid = null;
-  canvas.addEventListener("mousemove", () => {
-    canvas.style.cursor = pencil.checked ? "crosshair" : "";
-    clearTimeout(cursorTid);
-    cursorTid = setTimeout(() => {
-      canvas.style.cursor = "none";
-    }, 3000);
-  });
-
-  rotl.addEventListener("click", () => rotateLeft());
-  rotu.addEventListener("click", () => rotateUp());
-  rotd.addEventListener("click", () => rotateDown());
-  rotr.addEventListener("click", () => rotateRight());
-
+document.onselectstart = () => false;
+window.addEventListener("resize", () => render(load()));
+document.querySelectorAll(".control").forEach(x => x.addEventListener("change", () => render(save())));
+swap.addEventListener("click", () => {
+  const tmp = fg.value;
+  fg.value = bg.value;
+  bg.value = tmp;
   render(save());
 });
+config.addEventListener("keydown", ev => {
+  if (ev.key == "Enter") {
+    render(load());
+  }
+});
+config.addEventListener("focus", () => config.select());
+
+preview.addEventListener("click", ev => {
+  if (pencil.checked) {
+    const cp = preview.getBoundingClientRect()
+    draw(ev.clientX - cp.left, ev.clientY - cp.top);
+  }
+});
+canvas.addEventListener("click", ev => {
+  if (pencil.checked) {
+    const cp = canvas.getBoundingClientRect()
+    draw(ev.clientX - cp.left, ev.clientY - cp.top);
+  }
+});
+pencil.addEventListener("change", () => {
+  preview.style.cursor = pencil.checked ? "crosshair" : "";
+  canvas.style.cursor = "crosshair";
+});
+
+fullscreen.addEventListener("click", () => toggleFullscreen());
+canvas.addEventListener("dblclick", () => {
+  if (!pencil.checked) {
+    toggleFullscreen();
+  }
+});
+let cursorTid = null;
+canvas.addEventListener("mousemove", () => {
+  canvas.style.cursor = pencil.checked ? "crosshair" : "";
+  clearTimeout(cursorTid);
+  cursorTid = setTimeout(() => {
+    canvas.style.cursor = "none";
+  }, 3000);
+});
+
+rotl.addEventListener("click", () => rotateLeft());
+rotu.addEventListener("click", () => rotateUp());
+rotd.addEventListener("click", () => rotateDown());
+rotr.addEventListener("click", () => rotateRight());
+
+render(save());
