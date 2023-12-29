@@ -203,7 +203,10 @@ function draw(cx, cy) {
 
 function toggleFullscreen() {
   if (document.fullscreenElement) {
+    const canvas = document.getElementById("render");
+    const pencil = document.getElementById("pencil");
     document.exitFullscreen();
+    canvas.style.cursor = pencil.checked ? "crosshair" : "";
   } else {
     const wrapper = document.getElementById("wrapper");
     wrapper.requestFullscreen({
@@ -277,6 +280,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
   config.addEventListener("focus", () => config.select());
+
   preview.addEventListener("click", ev => {
     if (pencil.checked) {
       const cp = preview.getBoundingClientRect()
@@ -289,11 +293,24 @@ window.addEventListener("DOMContentLoaded", () => {
       draw(ev.clientX - cp.left, ev.clientY - cp.top);
     }
   });
+  pencil.addEventListener("change", () => {
+    preview.style.cursor = pencil.checked ? "crosshair" : "";
+    canvas.style.cursor = "crosshair";
+  });
+
   fullscreen.addEventListener("click", () => toggleFullscreen());
   canvas.addEventListener("dblclick", () => {
     if (!pencil.checked) {
       toggleFullscreen();
     }
+  });
+  let cursorTid = null;
+  canvas.addEventListener("mousemove", () => {
+    canvas.style.cursor = pencil.checked ? "crosshair" : "";
+    clearTimeout(cursorTid);
+    cursorTid = setTimeout(() => {
+      canvas.style.cursor = "none";
+    }, 3000);
   });
 
   rotl.addEventListener("click", () => rotateLeft());
