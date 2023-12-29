@@ -133,10 +133,11 @@ function createPattern(options) {
 function render(options) {
   const wrapper = document.getElementById("wrapper");
   const canvas = document.getElementById("render");
-  canvas.width = wrapper.clientWidth;
-  canvas.height = wrapper.clientHeight;
 
   const pc = createPattern(options);
+  // set canvas size after creating pattern since changing pattern size shifts the wrapper size
+  canvas.width = wrapper.clientWidth;
+  canvas.height = wrapper.clientHeight;
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const cpat = ctx.createPattern(pc, "repeat");
