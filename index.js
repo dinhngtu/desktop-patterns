@@ -226,6 +226,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const pencil = document.getElementById("pencil");
   const fullscreen = document.getElementById("fullscreen");
 
+  document.onselectstart = () => false;
   window.addEventListener("resize", () => render(load()));
   document.querySelectorAll(".control").forEach(x => x.addEventListener("change", () => render(save())));
   swap.addEventListener("click", () => {
