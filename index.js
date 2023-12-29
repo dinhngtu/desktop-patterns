@@ -133,6 +133,13 @@ function createPattern(options) {
 function render(options) {
   const wrapper = document.getElementById("wrapper");
   const canvas = document.getElementById("render");
+  const zoomwarning = document.getElementById("zoomwarning");
+
+  if (window.devicePixelRatio === undefined || window.devicePixelRatio === 1) {
+    zoomwarning.style.display = "none";
+  } else {
+    zoomwarning.style.display = "block";
+  }
 
   const pc = createPattern(options);
   // set canvas size after creating pattern since changing pattern size shifts the wrapper size

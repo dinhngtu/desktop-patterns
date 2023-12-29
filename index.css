@@ -57,3 +57,7 @@ body, .main {
 .grow {
     flex-grow: 1;
 }
+
+#zoomwarning {
+    display: none;
+}
