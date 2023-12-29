@@ -68,3 +68,15 @@ body,
 #zoomwarning {
     display: none;
 }
+
+.stack-container {
+    display: flex;
+    align-items: stretch;
+}
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    height: 100%;
+}

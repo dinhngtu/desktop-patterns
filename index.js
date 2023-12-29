@@ -214,6 +214,38 @@ function toggleFullscreen() {
   }
 }
 
+function rotateLeft() {
+  const options = load();
+  for (let i = 0; i < options.pattern.length; i++) {
+    const top = options.pattern[i] >> (options.bpc - 1);
+    options.pattern[i] = ((options.pattern[i] << 1) | top) & ((1 << options.bpc) - 1);
+  }
+  render(save(options));
+}
+
+function rotateUp() {
+  const options = load();
+  const old = Array.prototype.pop.call(options.pattern);
+  Array.prototype.unshift.call(options.pattern, old);
+  render(save(options));
+}
+
+function rotateDown() {
+  const options = load();
+  const old = Array.prototype.shift.call(options.pattern);
+  Array.prototype.push.call(options.pattern, old);
+  render(save(options));
+}
+
+function rotateRight() {
+  const options = load();
+  for (let i = 0; i < options.pattern.length; i++) {
+    const bottom = options.pattern[i] & 1;
+    options.pattern[i] = (options.pattern[i] >> 1) | (bottom << (options.bpc - 1));
+  }
+  render(save(options));
+}
+
 window.addEventListener("DOMContentLoaded", () => {
   loadPatterns();
 
@@ -225,6 +257,10 @@ window.addEventListener("DOMContentLoaded", () => {
   const canvas = document.getElementById("render");
   const pencil = document.getElementById("pencil");
   const fullscreen = document.getElementById("fullscreen");
+  const rotl = document.getElementById("rotl");
+  const rotu = document.getElementById("rotu");
+  const rotd = document.getElementById("rotd");
+  const rotr = document.getElementById("rotr");
 
   document.onselectstart = () => false;
   window.addEventListener("resize", () => render(load()));
@@ -259,5 +295,11 @@ window.addEventListener("DOMContentLoaded", () => {
       toggleFullscreen();
     }
   });
+
+  rotl.addEventListener("click", () => rotateLeft());
+  rotu.addEventListener("click", () => rotateUp());
+  rotd.addEventListener("click", () => rotateDown());
+  rotr.addEventListener("click", () => rotateRight());
+
   render(save());
 });
