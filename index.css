@@ -11,7 +11,8 @@ html {
     right: 0;
 }
 
-body, .main {
+body,
+.main {
     width: 100%;
     height: 100%;
 }
@@ -21,7 +22,8 @@ body, .main {
     flex-direction: column;
 }
 
-.controls, #wrapper {
+.controls,
+#wrapper {
     margin: 0 8px 8px;
 }
 
@@ -37,7 +39,12 @@ body, .main {
     align-items: baseline;
 }
 
-.controls > .controlgroup:not(:last-child), .controlgroup > :not(:last-child) {
+.center {
+    align-items: center;
+}
+
+.controls>*:not(:last-child),
+.controlgroup> :not(:last-child) {
     margin-right: 8px;
 }
 
