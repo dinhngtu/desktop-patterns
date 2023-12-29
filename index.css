@@ -50,6 +50,10 @@ body, .main {
     border: 1px solid black;
 }
 
+#preview:not(:fullscreen) {
+    border: 1px solid black;
+}
+
 .grow {
     flex-grow: 1;
 }

@@ -44,8 +44,14 @@
                 <input type="button" id="fullscreen" value="Fullscreen">
             </div>
         </div>
+        <div class="controls">
+            <div class="controlgroup">
+                <label for="preview">Preview:</label>
+                <canvas id="preview" width="8" height="8"></canvas>
+            </div>
+        </div>
         <div id="wrapper">
-            <canvas id="canvas"></canvas>
+            <canvas id="render"></canvas>
         </div>
     </div>
     <script src="index.js" type="text/javascript"></script>

@@ -87,7 +87,7 @@ function loadPatterns() {
 }
 
 function createPattern(options) {
-  const pc = document.createElement("canvas");
+  const pc = document.getElementById("preview");
   pc.width = options.bpc * options.zoom;
   pc.height = options.pattern.length * options.zoom;
 
@@ -132,7 +132,7 @@ function createPattern(options) {
 
 function render(options) {
   const wrapper = document.getElementById("wrapper");
-  const canvas = document.getElementById("canvas");
+  const canvas = document.getElementById("render");
   canvas.width = wrapper.clientWidth;
   canvas.height = wrapper.clientHeight;
 
@@ -213,9 +213,11 @@ window.addEventListener("DOMContentLoaded", () => {
   const bg = document.getElementById("bg");
   const swap = document.getElementById("swap");
   const config = document.getElementById("config");
-  const canvas = document.getElementById("canvas");
+  const preview = document.getElementById("preview");
+  const canvas = document.getElementById("render");
   const pencil = document.getElementById("pencil");
   const fullscreen = document.getElementById("fullscreen");
+
   window.addEventListener("resize", () => render(load()));
   document.querySelectorAll(".control").forEach(x => x.addEventListener("change", () => render(save())));
   swap.addEventListener("click", () => {
@@ -230,6 +232,12 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
   config.addEventListener("focus", () => config.select());
+  preview.addEventListener("click", ev => {
+    if (pencil.checked) {
+      const cp = preview.getBoundingClientRect()
+      draw(ev.clientX - cp.left, ev.clientY - cp.top);
+    }
+  });
   canvas.addEventListener("click", ev => {
     if (pencil.checked) {
       const cp = canvas.getBoundingClientRect()
