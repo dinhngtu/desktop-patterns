@@ -294,6 +294,40 @@ canvas.addEventListener("mousemove", () => {
   }, 3000);
 });
 
+window.addEventListener("wheel", ev => {
+  if (ev.ctrlKey && !ev.altKey && !ev.shiftKey && !ev.metaKey) {
+    ev.preventDefault();
+    if (ev.deltaY < 0) {
+      zoom.value = Math.min(parseInt(zoom.value) + 1, 16);
+      render(save());
+    } else if (ev.deltaY > 0) {
+      zoom.value = Math.max(parseInt(zoom.value) - 1, 1);
+      render(save());
+    }
+  }
+}, { passive: false });
+window.addEventListener("keydown", ev => {
+  if (ev.ctrlKey && !ev.altKey && !ev.shiftKey && !ev.metaKey) {
+    switch (ev.key) {
+      case "0":
+        ev.preventDefault();
+        zoom.value = 1;
+        render(save());
+        break;
+      case "=":
+        ev.preventDefault();
+        zoom.value = Math.min(parseInt(zoom.value) + 1, 16);
+        render(save());
+        break;
+      case "-":
+        ev.preventDefault();
+        zoom.value = Math.max(parseInt(zoom.value) - 1, 1);
+        render(save());
+        break;
+    }
+  }
+});
+
 rotl.addEventListener("click", () => rotateLeft());
 rotu.addEventListener("click", () => rotateUp());
 rotd.addEventListener("click", () => rotateDown());
